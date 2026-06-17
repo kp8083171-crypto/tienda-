@@ -282,5 +282,58 @@ class Program
         Console.WriteLine("Producto agregado correctamente.");
     }
 
-    static void GenerarReporte() { /* Lógica de procesamiento y conteo */ }
+    static void GenerarReporte()
+{
+    Console.WriteLine("=== REPORTE DE VENTAS E INGRESOS ===");
+
+    if (!File.Exists(rutaVentas))
+    {
+        Console.WriteLine("No existe el archivo de ventas.");
+        return;
+    }
+
+    string[] lineas = File.ReadAllLines(rutaVentas);
+
+    if (lineas.Length == 0)
+    {
+        Console.WriteLine("No hay ventas registradas.");
+        return;
+    }
+
+    int totalVentas = 0;
+    int totalProductosVendidos = 0;
+    double ingresosTotales = 0;
+
+    Console.WriteLine("\n===== DETALLE DE VENTAS =====\n");
+
+    foreach (string linea in lineas)
+    {
+        string[] datos = linea.Split(',');
+
+        if (datos.Length != 5)
+            continue;
+
+        string fecha = datos[0];
+        string codigo = datos[1];
+        string nombre = datos[2];
+        int cantidad = int.Parse(datos[3]);
+        double total = double.Parse(datos[4]);
+
+        totalVentas++;
+        totalProductosVendidos += cantidad;
+        ingresosTotales += total;
+
+        Console.WriteLine($"Fecha: {fecha}");
+        Console.WriteLine($"Código: {codigo}");
+        Console.WriteLine($"Producto: {nombre}");
+        Console.WriteLine($"Cantidad Vendida: {cantidad}");
+        Console.WriteLine($"Total Venta: S/. {total:F2}");
+        Console.WriteLine("----------------------------------");
+    }
+
+    Console.WriteLine("\n===== RESUMEN GENERAL =====");
+    Console.WriteLine($"Número de ventas realizadas: {totalVentas}");
+    Console.WriteLine($"Total de productos vendidos: {totalProductosVendidos}");
+    Console.WriteLine($"Ingresos totales: S/. {ingresosTotales:F2}");
+}
 }
