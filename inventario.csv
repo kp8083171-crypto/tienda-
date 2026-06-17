@@ -3,7 +3,7 @@ P002,Coca Cola,Bebida,3.0,40
 P003,Pan,Alimentos,1.0,100
 P004,Leche,Lácteos,4.2,30
 P005,Queso,Lácteos,6.5,20
-P006,Jugo,Bebida,2.8,35
+P006,Jugo,Bebida,2.8,32
 P007,Chocolate,Snack,3.5,25
 P008,Café,Bebida,5.0,15
 P009,Arroz,Granos,4.0,60
@@ -49,3 +49,4 @@ P048,Agua con Gas,Bebida,2.0,50
 P049,Té,Bebida,3.0,40
 P050,Infusión,Bebida,2.5,35
 P0051,Inka Cola,Bebidas,3,40
+p0052,chetos,snack,4,50
