@@ -184,6 +184,7 @@ class Program
         Console.WriteLine("=== CONSULTAR STOCK ===");
         Console.WriteLine("[1] Buscar producto por código");
         Console.WriteLine("[2] Mostrar TODO el inventario");
+        Console.WriteLine("[3] Editar producto");
         Console.Write("Seleccione: ");
 
         string opcion = Console.ReadLine();
@@ -224,8 +225,13 @@ class Program
 
             foreach (var p in lista)
             {
+                
                 Console.WriteLine($"{p[0]} | {p[1]} | {p[2]} | S/.{p[3]} | Stock: {p[4]}");
             }
+        }
+        else if (opcion == "3")
+        {
+            EditarProducto();
         }
         else
         {
@@ -233,6 +239,79 @@ class Program
         }
     }
 
+static void EditarProducto()
+{
+    var lista = LeerInventario();
+
+    Console.WriteLine("=== PRODUCTOS DISPONIBLES ===");
+
+    foreach (var p in lista)
+    {
+        Console.WriteLine($"{p[0]} | {p[1]} | {p[2]} | S/.{p[3]} | Stock: {p[4]}");
+    }
+
+    Console.WriteLine("=== EDITAR PRODUCTO ===");
+
+    Console.Write("Ingrese el código del producto: ");
+    string codigo = Console.ReadLine();
+
+    string[] producto = null;
+
+    foreach (var p in lista)
+    {
+        if (p[0].Equals(codigo, StringComparison.OrdinalIgnoreCase))
+        {
+            producto = p;
+            break;
+        }
+    }
+
+    if (producto == null)
+    {
+        Console.WriteLine("Producto no encontrado.");
+        return;
+    }
+
+    Console.WriteLine("\nDatos actuales:");
+    Console.WriteLine($"Código: {producto[0]}");
+    Console.WriteLine($"Nombre: {producto[1]}");
+    Console.WriteLine($"Categoría: {producto[2]}");
+    Console.WriteLine($"Precio: {producto[3]}");
+    Console.WriteLine($"Stock: {producto[4]}");
+
+    Console.Write("\nNuevo código: ");
+    string nuevoCodigo = Console.ReadLine();
+
+    Console.Write("\nNuevo nombre: ");
+    string nuevoNombre = Console.ReadLine();
+
+    Console.Write("Nueva categoría: ");
+    string nuevaCategoria = Console.ReadLine();
+
+    Console.Write("Nuevo precio: ");
+    if (!double.TryParse(Console.ReadLine(), out double nuevoPrecio))
+    {
+        Console.WriteLine("Precio inválido.");
+        return;
+    }
+
+    Console.Write("Nuevo stock: ");
+    if (!int.TryParse(Console.ReadLine(), out int nuevoStock))
+    {
+        Console.WriteLine("Stock inválido.");
+        return;
+    }
+
+    producto[0] = nuevoCodigo;
+    producto[1] = nuevoNombre;
+    producto[2] = nuevaCategoria;
+    producto[3] = nuevoPrecio.ToString();
+    producto[4] = nuevoStock.ToString();
+
+    GuardarInventario(lista);
+
+    Console.WriteLine("Producto actualizado correctamente.");
+}
     static void AgregarProducto()
     {
         var lista = LeerInventario();
