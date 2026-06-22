@@ -118,7 +118,6 @@ class Program
 
         string[] productoSeleccionado = null;
 
-        // Buscar el producto en el inventario cargado
         foreach (var p in lista)
         {
             if (p[0].Equals(codigo, StringComparison.OrdinalIgnoreCase))
@@ -134,7 +133,6 @@ class Program
             return;
         }
 
-        // Mostrar detalles actuales del producto seleccionado
         Console.WriteLine($"Producto: {productoSeleccionado[1]} | Precio: S/.{productoSeleccionado[3]} | Stock Actual: {productoSeleccionado[4]}");
         
         Console.Write("Cantidad a vender: ");
@@ -146,29 +144,22 @@ class Program
 
         int stockActual = int.Parse(productoSeleccionado[4]);
 
-        // Validar si hay suficientes existencias en bodega
         if (cantidad > stockActual)
         {
             Console.WriteLine("ERROR: Stock insuficiente para procesar esta venta.");
             return;
         }
 
-        // Calcular los valores comerciales de la transacción
         double precio = double.Parse(productoSeleccionado[3]);
         double totalPagar = precio * cantidad;
 
-        // Actualizar el stock reduciéndolo en memoria
         int nuevoStock = stockActual - cantidad;
         productoSeleccionado[4] = nuevoStock.ToString();
 
-        // Guardar el inventario con los stocks actualizados en el archivo plano
         GuardarInventario(lista);
 
-        // Estructurar el formato de salida para el archivo histórico de ventas
-        // Formato: Fecha_Hora,Codigo,Nombre,Cantidad,Total
         string registroVenta = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss},{productoSeleccionado[0]},{productoSeleccionado[1]},{cantidad},{totalPagar}";
         
-        // Escribir la venta al final del archivo sin alterar registros previos
         File.AppendAllLines(rutaVentas, new List<string> { registroVenta });
 
         Console.WriteLine("\n=================================");
