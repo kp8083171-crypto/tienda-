@@ -42,7 +42,7 @@ class Program
                         VerStock();       // Trazabilidad: Opción 2 del Menú
                         break;
                     case 3:
-                        AgregarProducto(); // Trazabilidad: Opción 3 del Menú
+                        GestionProductos(); // Trazabilidad: Opción 3 del Menú
                         break;
                     case 4:
                         GenerarReporte(); // Trazabilidad: Opción 4 del Menú
@@ -184,7 +184,6 @@ class Program
         Console.WriteLine("=== CONSULTAR STOCK ===");
         Console.WriteLine("[1] Buscar producto por código");
         Console.WriteLine("[2] Mostrar TODO el inventario");
-        Console.WriteLine("[3] Editar producto");
         Console.Write("Seleccione: ");
 
         string opcion = Console.ReadLine();
@@ -229,14 +228,97 @@ class Program
                 Console.WriteLine($"{p[0]} | {p[1]} | {p[2]} | S/.{p[3]} | Stock: {p[4]}");
             }
         }
-        else if (opcion == "3")
-        {
-            EditarProducto();
-        }
+
         else
         {
             Console.WriteLine("Opción inválida.");
         }
+    }
+
+static void GestionProductos()
+{
+    Console.WriteLine("=== GESTIÓN DE PRODUCTOS ===");
+    Console.WriteLine("[1] Agregar producto");
+    Console.WriteLine("[2] Editar producto");
+    Console.WriteLine("[3] Eliminar producto");
+    Console.Write("Seleccione: ");
+
+    string opcion = Console.ReadLine();
+
+    if (opcion == "1")
+    {
+        AgregarProducto();
+    }
+    else if (opcion == "2")
+    {
+        EditarProducto();
+    }
+    else if (opcion == "3")
+    {
+        EliminarProducto();
+    }
+    else
+    {
+        Console.WriteLine("Opción inválida.");
+    }
+}
+
+    static void AgregarProducto()
+    {
+        var lista = LeerInventario();
+
+        Console.WriteLine("=== PRODUCTOS DISPONIBLES ===");
+
+        foreach (var p in lista)
+        {
+            Console.WriteLine($"{p[0]} | {p[1]} | {p[2]} | S/.{p[3]} | Stock: {p[4]}");
+        }
+
+        Console.WriteLine();
+
+        Console.WriteLine("=== AGREGAR PRODUCTO ===");
+
+        Console.Write("Código: ");
+        string codigo = Console.ReadLine();
+
+        foreach (var p in lista)
+        {
+            if (p[0].Equals(codigo, StringComparison.OrdinalIgnoreCase))
+            {
+                Console.WriteLine("ERROR: Código ya existe.");
+                return;
+            }
+        }
+
+        Console.Write("Nombre: ");
+        string nombre = Console.ReadLine();
+
+        Console.Write("Categoría: ");
+        string categoria = Console.ReadLine();
+
+        Console.Write("Precio: ");
+        if (!double.TryParse(Console.ReadLine(), out double precio))
+        {
+            Console.WriteLine("Precio inválido.");
+            return;
+        }
+
+        Console.Write("Stock: ");
+        if (!int.TryParse(Console.ReadLine(), out int stock))
+        {
+            Console.WriteLine("Stock inválido.");
+            return;
+        }
+
+        lista.Add(new string[]
+        {
+            codigo, nombre, categoria,
+            precio.ToString(), stock.ToString()
+        });
+
+        GuardarInventario(lista);
+
+        Console.WriteLine("Producto agregado correctamente.");
     }
 
 static void EditarProducto()
@@ -312,54 +394,61 @@ static void EditarProducto()
 
     Console.WriteLine("Producto actualizado correctamente.");
 }
-    static void AgregarProducto()
+
+static void EliminarProducto()
+{
+    var lista = LeerInventario();
+
+    Console.WriteLine("=== PRODUCTOS DISPONIBLES ===");
+
+    foreach (var p in lista)
     {
-        var lista = LeerInventario();
+        Console.WriteLine($"{p[0]} | {p[1]} | {p[2]} | S/.{p[3]} | Stock: {p[4]}");
+    }
 
-        Console.WriteLine("=== AGREGAR PRODUCTO ===");
+    Console.WriteLine();
 
-        Console.Write("Código: ");
-        string codigo = Console.ReadLine();
+    Console.WriteLine("=== ELIMINAR PRODUCTO ===");
 
-        foreach (var p in lista)
+    Console.Write("Ingrese el código del producto a eliminar: ");
+    string codigo = Console.ReadLine();
+
+    string[] producto = null;
+
+    foreach (var p in lista)
+    {
+        if (p[0].Equals(codigo, StringComparison.OrdinalIgnoreCase))
         {
-            if (p[0].Equals(codigo, StringComparison.OrdinalIgnoreCase))
-            {
-                Console.WriteLine("ERROR: Código ya existe.");
-                return;
-            }
+            producto = p;
+            break;
         }
+    }
 
-        Console.Write("Nombre: ");
-        string nombre = Console.ReadLine();
+    if (producto == null)
+    {
+        Console.WriteLine("Producto no encontrado.");
+        return;
+    }
 
-        Console.Write("Categoría: ");
-        string categoria = Console.ReadLine();
+    Console.WriteLine($"\nCódigo: {producto[0]}");
+    Console.WriteLine($"Nombre: {producto[1]}");
 
-        Console.Write("Precio: ");
-        if (!double.TryParse(Console.ReadLine(), out double precio))
-        {
-            Console.WriteLine("Precio inválido.");
-            return;
-        }
+    Console.Write("\n¿Desea eliminar este producto? (S/N): ");
+    string respuesta = Console.ReadLine();
 
-        Console.Write("Stock: ");
-        if (!int.TryParse(Console.ReadLine(), out int stock))
-        {
-            Console.WriteLine("Stock inválido.");
-            return;
-        }
-
-        lista.Add(new string[]
-        {
-            codigo, nombre, categoria,
-            precio.ToString(), stock.ToString()
-        });
+    if (respuesta.ToUpper() == "S")
+    {
+        lista.Remove(producto);
 
         GuardarInventario(lista);
 
-        Console.WriteLine("Producto agregado correctamente.");
+        Console.WriteLine("Producto eliminado correctamente.");
     }
+    else
+    {
+        Console.WriteLine("Operación cancelada.");
+    }
+}
 
     static void GenerarReporte()
 {
