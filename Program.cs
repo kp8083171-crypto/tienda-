@@ -106,8 +106,7 @@ class Program
         File.WriteAllLines(rutaInventario, lineas);
     }
 
-
-    // Lógica de lectura/escritura simultánea incorporada con éxito
+// Lógica de lectura/escritura simultánea incorporada con éxito
     static void RegistrarVenta() 
     {
         Console.WriteLine("=== REGISTRAR NUEVA VENTA ===");
@@ -153,18 +152,67 @@ class Program
         double precio = double.Parse(productoSeleccionado[3]);
         double totalPagar = precio * cantidad;
 
+        // --- NUEVA LÓGICA: SELECCIÓN DE TIPO DE PAGO ---
+        string tipoPago = "";
+        while (tipoPago == "")
+        {
+            Console.WriteLine("\nSeleccione Tipo de Pago:");
+            Console.WriteLine("[1] Efectivo");
+            Console.WriteLine("[2] Yape / Plin");
+            Console.Write("Opción: ");
+            string opPago = Console.ReadLine();
+
+            if (opPago == "1") tipoPago = "Efectivo";
+            else if (opPago == "2") tipoPago = "Yape/Plin";
+            else Console.WriteLine("Opción no válida. Intente de nuevo.");
+        }
+
+        double importeRecibido = totalPagar;
+        double vuelto = 0;
+
+        // --- NUEVA LÓGICA: IMPORTE RECIBIDO Y VUELTO ---
+        if (tipoPago == "Efectivo")
+        {
+            bool importeValido = false;
+            while (!importeValido)
+            {
+                Console.Write($"Total a pagar: S/.{totalPagar:F2} | Ingrese Pago del Cliente: S/. ");
+                if (double.TryParse(Console.ReadLine(), out importeRecibido) && importeRecibido >= totalPagar)
+                {
+                    vuelto = importeRecibido - totalPagar;
+                    importeValido = true;
+                }
+                else
+                {
+                    Console.WriteLine("ERROR: El monto ingresado es insuficiente o inválido.");
+                }
+            }
+        }
+        else
+        {
+            // Para Yape/Plin el importe recibido es exactamente el total a pagar y el vuelto es 0
+            importeRecibido = totalPagar;
+            vuelto = 0;
+            Console.WriteLine($"\nPago con {tipoPago} confirmado por S/.{totalPagar:F2}");
+        }
+
+        // --- PERSISTENCIA Y ACTUALIZACIÓN ---
         int nuevoStock = stockActual - cantidad;
         productoSeleccionado[4] = nuevoStock.ToString();
 
         GuardarInventario(lista);
 
-        string registroVenta = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss},{productoSeleccionado[0]},{productoSeleccionado[1]},{cantidad},{totalPagar}";
+        // Se agregan las nuevas columnas al registro: TipoPago, ImporteRecibido, Vuelto
+        string registroVenta = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss},{productoSeleccionado[0]},{productoSeleccionado[1]},{cantidad},{totalPagar},{tipoPago},{importeRecibido},{vuelto}";
         
         File.AppendAllLines(rutaVentas, new List<string> { registroVenta });
 
         Console.WriteLine("\n=================================");
         Console.WriteLine("    VENTA PROCESADA CON ÉXITO");
+        Console.WriteLine($" Pago con:       {tipoPago}");
         Console.WriteLine($" Total a cobrar: S/.{totalPagar:F2}");
+        Console.WriteLine($" Recibido:       S/.{importeRecibido:F2}");
+        Console.WriteLine($" Vuelto:         S/.{vuelto:F2}");
         Console.WriteLine("=================================");
     }
 
