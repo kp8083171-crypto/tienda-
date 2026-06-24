@@ -3,7 +3,7 @@ P002,Coca Cola,Bebida,3.0,40
 P003,Pan,Alimentos,1.0,100
 P004,Leche,Lácteos,4.2,30
 P005,Queso,Lácteos,6.5,20
-P006,Jugo,Bebida,2.8,32
+P006,Jugo,Bebida,2.8,20
 P007,Chocolate,Snack,3.5,23
 P008,Café,Bebida,5.0,11
 P009,Arroz,Granos,4.0,55
@@ -24,7 +24,7 @@ P023,Huevos,Alimentos,7.0,50
 P024,Pollo,Carnes,10.0,30
 P025,Carne,Carnes,15.0,20
 P026,Pescado,Carnes,12.0,25
-P027,Manzana,Frutas,2.0,70
+P027,Manzana,Frutas,2.0,66
 P028,Plátano,Frutas,1.8,80
 P029,Naranja,Frutas,2.2,65
 P030,Pera,Frutas,2.5,60
@@ -40,7 +40,7 @@ P039,Salsa Soya,Condimentos,4.5,20
 P040,Harina,Granos,3.0,60
 P041,Avena,Granos,2.5,50
 P042,Granola,Snack,5.0,30
-P043,Barras Energéticas,Snack,4.5,19
+P043,Barras Energéticas,Snack,4.5,17
 P044,Helado,Postres,6.0,15
 P045,Pastel,Postres,8.0,10
 P046,Caramelos,Snack,1.5,100

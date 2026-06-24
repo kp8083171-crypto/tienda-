@@ -106,8 +106,8 @@ class Program
         File.WriteAllLines(rutaInventario, lineas);
     }
 
-// Lógica de lectura/escritura simultánea incorporada con éxito
-    static void RegistrarVenta() 
+    // Lógica de lectura/escritura simultánea incorporada con éxito
+    static void RegistrarVenta()
     {
         Console.WriteLine("=== REGISTRAR NUEVA VENTA ===");
         var lista = LeerInventario();
@@ -133,7 +133,7 @@ class Program
         }
 
         Console.WriteLine($"Producto: {productoSeleccionado[1]} | Precio: S/.{productoSeleccionado[3]} | Stock Actual: {productoSeleccionado[4]}");
-        
+
         Console.Write("Cantidad a vender: ");
         if (!int.TryParse(Console.ReadLine(), out int cantidad) || cantidad <= 0)
         {
@@ -204,7 +204,7 @@ class Program
 
         // Se agregan las nuevas columnas al registro: TipoPago, ImporteRecibido, Vuelto
         string registroVenta = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss},{productoSeleccionado[0]},{productoSeleccionado[1]},{cantidad},{totalPagar},{tipoPago},{importeRecibido},{vuelto}";
-        
+
         File.AppendAllLines(rutaVentas, new List<string> { registroVenta });
 
         Console.WriteLine("\n=================================");
@@ -263,7 +263,7 @@ class Program
 
             foreach (var p in lista)
             {
-                
+
                 Console.WriteLine($"{p[0]} | {p[1]} | {p[2]} | S/.{p[3]} | Stock: {p[4]}");
             }
         }
@@ -274,33 +274,33 @@ class Program
         }
     }
 
-static void GestionProductos()
-{
-    Console.WriteLine("=== GESTIÓN DE PRODUCTOS ===");
-    Console.WriteLine("[1] Agregar producto");
-    Console.WriteLine("[2] Editar producto");
-    Console.WriteLine("[3] Eliminar producto");
-    Console.Write("Seleccione: ");
+    static void GestionProductos()
+    {
+        Console.WriteLine("=== GESTIÓN DE PRODUCTOS ===");
+        Console.WriteLine("[1] Agregar producto");
+        Console.WriteLine("[2] Editar producto");
+        Console.WriteLine("[3] Eliminar producto");
+        Console.Write("Seleccione: ");
 
-    string opcion = Console.ReadLine();
+        string opcion = Console.ReadLine();
 
-    if (opcion == "1")
-    {
-        AgregarProducto();
+        if (opcion == "1")
+        {
+            AgregarProducto();
+        }
+        else if (opcion == "2")
+        {
+            EditarProducto();
+        }
+        else if (opcion == "3")
+        {
+            EliminarProducto();
+        }
+        else
+        {
+            Console.WriteLine("Opción inválida.");
+        }
     }
-    else if (opcion == "2")
-    {
-        EditarProducto();
-    }
-    else if (opcion == "3")
-    {
-        EliminarProducto();
-    }
-    else
-    {
-        Console.WriteLine("Opción inválida.");
-    }
-}
 
     static void AgregarProducto()
     {
@@ -360,228 +360,304 @@ static void GestionProductos()
         Console.WriteLine("Producto agregado correctamente.");
     }
 
-static void EditarProducto()
-{
-    var lista = LeerInventario();
-
-    Console.WriteLine("=== PRODUCTOS DISPONIBLES ===");
-
-    foreach (var p in lista)
+    static void EditarProducto()
     {
-        Console.WriteLine($"{p[0]} | {p[1]} | {p[2]} | S/.{p[3]} | Stock: {p[4]}");
-    }
+        var lista = LeerInventario();
 
-    Console.WriteLine("=== EDITAR PRODUCTO ===");
+        Console.WriteLine("=== PRODUCTOS DISPONIBLES ===");
 
-    Console.Write("Ingrese el código del producto: ");
-    string codigo = Console.ReadLine();
-
-    string[] producto = null;
-
-    foreach (var p in lista)
-    {
-        if (p[0].Equals(codigo, StringComparison.OrdinalIgnoreCase))
+        foreach (var p in lista)
         {
-            producto = p;
-            break;
+            Console.WriteLine($"{p[0]} | {p[1]} | {p[2]} | S/.{p[3]} | Stock: {p[4]}");
         }
-    }
 
-    if (producto == null)
-    {
-        Console.WriteLine("Producto no encontrado.");
-        return;
-    }
+        Console.WriteLine("=== EDITAR PRODUCTO ===");
 
-    Console.WriteLine("\nDatos actuales:");
-    Console.WriteLine($"Código: {producto[0]}");
-    Console.WriteLine($"Nombre: {producto[1]}");
-    Console.WriteLine($"Categoría: {producto[2]}");
-    Console.WriteLine($"Precio: {producto[3]}");
-    Console.WriteLine($"Stock: {producto[4]}");
+        Console.Write("Ingrese el código del producto: ");
+        string codigo = Console.ReadLine();
 
-    Console.Write("\nNuevo código: ");
-    string nuevoCodigo = Console.ReadLine();
+        string[] producto = null;
 
-    Console.Write("\nNuevo nombre: ");
-    string nuevoNombre = Console.ReadLine();
-
-    Console.Write("Nueva categoría: ");
-    string nuevaCategoria = Console.ReadLine();
-
-    Console.Write("Nuevo precio: ");
-    if (!double.TryParse(Console.ReadLine(), out double nuevoPrecio))
-    {
-        Console.WriteLine("Precio inválido.");
-        return;
-    }
-
-    Console.Write("Nuevo stock: ");
-    if (!int.TryParse(Console.ReadLine(), out int nuevoStock))
-    {
-        Console.WriteLine("Stock inválido.");
-        return;
-    }
-
-    producto[0] = nuevoCodigo;
-    producto[1] = nuevoNombre;
-    producto[2] = nuevaCategoria;
-    producto[3] = nuevoPrecio.ToString();
-    producto[4] = nuevoStock.ToString();
-
-    GuardarInventario(lista);
-
-    Console.WriteLine("Producto actualizado correctamente.");
-}
-
-static void EliminarProducto()
-{
-    var lista = LeerInventario();
-
-    Console.WriteLine("=== PRODUCTOS DISPONIBLES ===");
-
-    foreach (var p in lista)
-    {
-        Console.WriteLine($"{p[0]} | {p[1]} | {p[2]} | S/.{p[3]} | Stock: {p[4]}");
-    }
-
-    Console.WriteLine();
-
-    Console.WriteLine("=== ELIMINAR PRODUCTO ===");
-
-    Console.Write("Ingrese el código del producto a eliminar: ");
-    string codigo = Console.ReadLine();
-
-    string[] producto = null;
-
-    foreach (var p in lista)
-    {
-        if (p[0].Equals(codigo, StringComparison.OrdinalIgnoreCase))
+        foreach (var p in lista)
         {
-            producto = p;
-            break;
+            if (p[0].Equals(codigo, StringComparison.OrdinalIgnoreCase))
+            {
+                producto = p;
+                break;
+            }
         }
-    }
 
-    if (producto == null)
-    {
-        Console.WriteLine("Producto no encontrado.");
-        return;
-    }
+        if (producto == null)
+        {
+            Console.WriteLine("Producto no encontrado.");
+            return;
+        }
 
-    Console.WriteLine($"\nCódigo: {producto[0]}");
-    Console.WriteLine($"Nombre: {producto[1]}");
+        Console.WriteLine("\nDatos actuales:");
+        Console.WriteLine($"Código: {producto[0]}");
+        Console.WriteLine($"Nombre: {producto[1]}");
+        Console.WriteLine($"Categoría: {producto[2]}");
+        Console.WriteLine($"Precio: {producto[3]}");
+        Console.WriteLine($"Stock: {producto[4]}");
 
-    Console.Write("\n¿Desea eliminar este producto? (S/N): ");
-    string respuesta = Console.ReadLine();
+        Console.Write("\nNuevo código: ");
+        string nuevoCodigo = Console.ReadLine();
 
-    if (respuesta.ToUpper() == "S")
-    {
-        lista.Remove(producto);
+        Console.Write("\nNuevo nombre: ");
+        string nuevoNombre = Console.ReadLine();
+
+        Console.Write("Nueva categoría: ");
+        string nuevaCategoria = Console.ReadLine();
+
+        Console.Write("Nuevo precio: ");
+        if (!double.TryParse(Console.ReadLine(), out double nuevoPrecio))
+        {
+            Console.WriteLine("Precio inválido.");
+            return;
+        }
+
+        Console.Write("Nuevo stock: ");
+        if (!int.TryParse(Console.ReadLine(), out int nuevoStock))
+        {
+            Console.WriteLine("Stock inválido.");
+            return;
+        }
+
+        producto[0] = nuevoCodigo;
+        producto[1] = nuevoNombre;
+        producto[2] = nuevaCategoria;
+        producto[3] = nuevoPrecio.ToString();
+        producto[4] = nuevoStock.ToString();
 
         GuardarInventario(lista);
 
-        Console.WriteLine("Producto eliminado correctamente.");
+        Console.WriteLine("Producto actualizado correctamente.");
     }
-    else
+
+    static void EliminarProducto()
     {
-        Console.WriteLine("Operación cancelada.");
+        var lista = LeerInventario();
+
+        Console.WriteLine("=== PRODUCTOS DISPONIBLES ===");
+
+        foreach (var p in lista)
+        {
+            Console.WriteLine($"{p[0]} | {p[1]} | {p[2]} | S/.{p[3]} | Stock: {p[4]}");
+        }
+
+        Console.WriteLine();
+
+        Console.WriteLine("=== ELIMINAR PRODUCTO ===");
+
+        Console.Write("Ingrese el código del producto a eliminar: ");
+        string codigo = Console.ReadLine();
+
+        string[] producto = null;
+
+        foreach (var p in lista)
+        {
+            if (p[0].Equals(codigo, StringComparison.OrdinalIgnoreCase))
+            {
+                producto = p;
+                break;
+            }
+        }
+
+        if (producto == null)
+        {
+            Console.WriteLine("Producto no encontrado.");
+            return;
+        }
+
+        Console.WriteLine($"\nCódigo: {producto[0]}");
+        Console.WriteLine($"Nombre: {producto[1]}");
+
+        Console.Write("\n¿Desea eliminar este producto? (S/N): ");
+        string respuesta = Console.ReadLine();
+
+        if (respuesta.ToUpper() == "S")
+        {
+            lista.Remove(producto);
+
+            GuardarInventario(lista);
+
+            Console.WriteLine("Producto eliminado correctamente.");
+        }
+        else
+        {
+            Console.WriteLine("Operación cancelada.");
+        }
     }
-}
-
-static void GenerarReporte()
-{
-Console.WriteLine("=== REPORTE DE VENTAS E INGRESOS ===");
-if (!File.Exists(rutaVentas))
-{
-    Console.WriteLine("No existe el archivo de ventas.");
-    return;
-}
-
-string[] lineas = File.ReadAllLines(rutaVentas);
-
-if (lineas.Length == 0)
-{
-    Console.WriteLine("No hay ventas registradas.");
-    return;
-}
-
-int ventasTotales = 0;
-double gananciaTotal = 0;
-
-// Primero calculamos resumen general
-foreach (string linea in lineas)
-{
-    string[] datos = linea.Split(',');
-
-    if (datos.Length != 8)
-        continue;
-
-    int cantidad = int.Parse(datos[3]);
-    double total = double.Parse(datos[4]);
-
-    ventasTotales++;
-    gananciaTotal += total;
-}
-
-Console.WriteLine("\n===== RESUMEN GENERAL =====");
-Console.WriteLine($"Total de ventas realizadas: {ventasTotales}");
-Console.WriteLine($"Ganancia total: S/. {gananciaTotal:F2}");
-
-Console.WriteLine("\nSeleccione tipo de pago para filtrar:");
-Console.WriteLine("[1] Efectivo");
-Console.WriteLine("[2] Yape / Plin");
-Console.Write("Opción: ");
-
-string opcion = Console.ReadLine();
-string tipoBuscado = "";
-
-if (opcion == "1")
-    tipoBuscado = "Efectivo";
-else if (opcion == "2")
-    tipoBuscado = "Yape/Plin";
-else
-{
-    Console.WriteLine("Opción inválida.");
-    return;
-}
-
-int ventasFiltradas = 0;
-double ingresosFiltrados = 0;
-
-Console.WriteLine($"\n=== VENTAS POR {tipoBuscado.ToUpper()} ===\n");
-
-foreach (string linea in lineas)
-{
-    string[] datos = linea.Split(',');
-
-    if (datos.Length != 8)
-        continue;
-
-    string fecha = datos[0];
-    string codigo = datos[1];
-    string nombre = datos[2];
-    int cantidad = int.Parse(datos[3]);
-    double total = double.Parse(datos[4]);
-    string tipoPago = datos[5];
-
-    if (tipoPago == tipoBuscado)
+    static int PedirEntero(string mensaje)
     {
-        ventasFiltradas++;
-        ingresosFiltrados += total;
+        int valor;
+        while (true)
+        {
+            Console.Write(mensaje);
+            string input = Console.ReadLine();
 
-        Console.WriteLine($"Fecha: {fecha}");
-        Console.WriteLine($"Código: {codigo}");
-        Console.WriteLine($"Producto: {nombre}");
-        Console.WriteLine($"Cantidad: {cantidad}");
-        Console.WriteLine($"Total: S/. {total:F2}");
-        Console.WriteLine("--------------------------------");
+            if (int.TryParse(input, out valor))
+                return valor;
+
+            Console.WriteLine("Valor inválido. Intente nuevamente.");
+        }
     }
-}
+    static void GenerarReporte()
+    {
+        Console.WriteLine("=== REPORTE DE VENTAS E INGRESOS ===");
+        if (!File.Exists(rutaVentas))
+        {
+            Console.WriteLine("No existe el archivo de ventas.");
+            return;
+        }
 
-Console.WriteLine("\n===== RESUMEN FILTRADO =====");
-Console.WriteLine($"Ventas por {tipoBuscado}: {ventasFiltradas}");
-Console.WriteLine($"Ingresos por {tipoBuscado}: S/. {ingresosFiltrados:F2}");
-}
+        string[] lineas = File.ReadAllLines(rutaVentas);
 
+        if (lineas.Length == 0)
+        {
+            Console.WriteLine("No hay ventas registradas.");
+            return;
+        }
+
+        int ventasTotales = 0;
+        double gananciaTotal = 0;
+
+        foreach (string linea in lineas)
+        {
+            string[] datos = linea.Split(',');
+
+            if (datos.Length != 8)
+                continue;
+
+            double total = double.Parse(datos[4]);
+
+            ventasTotales++;
+            gananciaTotal += total;
+        }
+
+        Console.WriteLine("\n===== RESUMEN GENERAL =====");
+        Console.WriteLine($"Total de ventas: {ventasTotales}");
+        Console.WriteLine($"Ganancia total: S/. {gananciaTotal:F2}");
+
+        Console.WriteLine("\nFiltrar por tipo de pago:");
+        Console.WriteLine("[1] Efectivo");
+        Console.WriteLine("[2] Yape/Plin");
+        Console.WriteLine("[3] Todos");
+        Console.Write("Opción: ");
+
+        string opcionPago = Console.ReadLine();
+        string tipoBuscado = "";
+
+        if (opcionPago == "1") tipoBuscado = "Efectivo";
+        else if (opcionPago == "2") tipoBuscado = "Yape/Plin";
+        else tipoBuscado = "TODOS";
+
+        Console.WriteLine("\nFiltro por fecha:");
+        Console.WriteLine("[1] Un solo día");
+        Console.WriteLine("[2] Rango de fechas");
+        Console.WriteLine("[3] Sin filtro");
+        Console.Write("Opción: ");
+
+        string opcionFecha = Console.ReadLine();
+
+        DateTime fechaInicio = DateTime.MinValue;
+        DateTime fechaFin = DateTime.MaxValue;
+
+        if (opcionFecha == "1")
+        {
+            Console.WriteLine("\n=== FECHA ===");
+
+            DateTime fecha;
+
+            while (true)
+            {
+                int año = PedirEntero("Año: ");
+                int mes = PedirEntero("Mes: ");
+                int dia = PedirEntero("Día: ");
+
+                if (DateTime.TryParse($"{año}-{mes}-{dia}", out fecha))
+                    break;
+
+                Console.WriteLine("Fecha inválida. Intente nuevamente.");
+            }
+
+            fechaInicio = fecha.Date;
+            fechaFin = fecha.Date.AddDays(1).AddSeconds(-1);
+        }
+        else if (opcionFecha == "2")
+        {
+            Console.WriteLine("\n=== FECHA INICIO ===");
+
+            DateTime inicio;
+            while (true)
+            {
+                int añoI = PedirEntero("Año: ");
+                int mesI = PedirEntero("Mes: ");
+                int diaI = PedirEntero("Día: ");
+
+                if (DateTime.TryParse($"{añoI}-{mesI}-{diaI}", out inicio))
+                    break;
+
+                Console.WriteLine("Fecha inválida. Intente nuevamente.");
+            }
+
+            Console.WriteLine("\n=== FECHA FIN ===");
+
+            DateTime fin;
+            while (true)
+            {
+                int añoF = PedirEntero("Año: ");
+                int mesF = PedirEntero("Mes: ");
+                int diaF = PedirEntero("Día: ");
+
+                if (DateTime.TryParse($"{añoF}-{mesF}-{diaF}", out fin))
+                    break;
+
+                Console.WriteLine("Fecha inválida. Intente nuevamente.");
+            }
+
+            fechaInicio = inicio.Date;
+            fechaFin = fin.Date.AddDays(1).AddSeconds(-1);
+        }
+
+        Console.WriteLine("\n===== RESULTADOS =====\n");
+
+        int ventasFiltradas = 0;
+        double ingresosFiltrados = 0;
+
+        foreach (string linea in lineas)
+        {
+            string[] datos = linea.Split(',');
+
+            if (datos.Length != 8)
+                continue;
+
+            DateTime fechaVenta = DateTime.Parse(datos[0]);
+            string codigo = datos[1];
+            string nombre = datos[2];
+            int cantidad = int.Parse(datos[3]);
+            double total = double.Parse(datos[4]);
+            string tipoPago = datos[5];
+
+            bool cumplePago = (tipoBuscado == "TODOS" || tipoPago == tipoBuscado);
+            bool cumpleFecha = (fechaVenta >= fechaInicio && fechaVenta <= fechaFin);
+
+            if (cumplePago && cumpleFecha)
+            {
+                ventasFiltradas++;
+                ingresosFiltrados += total;
+
+                Console.WriteLine($"Fecha: {fechaVenta}");
+                Console.WriteLine($"Producto: {nombre}");
+                Console.WriteLine($"Cantidad: {cantidad}");
+                Console.WriteLine($"Total: S/. {total:F2}");
+                Console.WriteLine($"Pago: {tipoPago}");
+                Console.WriteLine("--------------------------------");
+            }
+        }
+
+        Console.WriteLine("\n===== RESUMEN FILTRADO =====");
+        Console.WriteLine($"Ventas encontradas: {ventasFiltradas}");
+        Console.WriteLine($"Ingresos: S/. {ingresosFiltrados:F2}");
+    }
 }
