@@ -489,58 +489,99 @@ static void EliminarProducto()
     }
 }
 
-    static void GenerarReporte()
+static void GenerarReporte()
 {
-    Console.WriteLine("=== REPORTE DE VENTAS E INGRESOS ===");
+Console.WriteLine("=== REPORTE DE VENTAS E INGRESOS ===");
+if (!File.Exists(rutaVentas))
+{
+    Console.WriteLine("No existe el archivo de ventas.");
+    return;
+}
 
-    if (!File.Exists(rutaVentas))
+string[] lineas = File.ReadAllLines(rutaVentas);
+
+if (lineas.Length == 0)
+{
+    Console.WriteLine("No hay ventas registradas.");
+    return;
+}
+
+int ventasTotales = 0;
+double gananciaTotal = 0;
+
+// Primero calculamos resumen general
+foreach (string linea in lineas)
+{
+    string[] datos = linea.Split(',');
+
+    if (datos.Length != 8)
+        continue;
+
+    int cantidad = int.Parse(datos[3]);
+    double total = double.Parse(datos[4]);
+
+    ventasTotales++;
+    gananciaTotal += total;
+}
+
+Console.WriteLine("\n===== RESUMEN GENERAL =====");
+Console.WriteLine($"Total de ventas realizadas: {ventasTotales}");
+Console.WriteLine($"Ganancia total: S/. {gananciaTotal:F2}");
+
+Console.WriteLine("\nSeleccione tipo de pago para filtrar:");
+Console.WriteLine("[1] Efectivo");
+Console.WriteLine("[2] Yape / Plin");
+Console.Write("Opción: ");
+
+string opcion = Console.ReadLine();
+string tipoBuscado = "";
+
+if (opcion == "1")
+    tipoBuscado = "Efectivo";
+else if (opcion == "2")
+    tipoBuscado = "Yape/Plin";
+else
+{
+    Console.WriteLine("Opción inválida.");
+    return;
+}
+
+int ventasFiltradas = 0;
+double ingresosFiltrados = 0;
+
+Console.WriteLine($"\n=== VENTAS POR {tipoBuscado.ToUpper()} ===\n");
+
+foreach (string linea in lineas)
+{
+    string[] datos = linea.Split(',');
+
+    if (datos.Length != 8)
+        continue;
+
+    string fecha = datos[0];
+    string codigo = datos[1];
+    string nombre = datos[2];
+    int cantidad = int.Parse(datos[3]);
+    double total = double.Parse(datos[4]);
+    string tipoPago = datos[5];
+
+    if (tipoPago == tipoBuscado)
     {
-        Console.WriteLine("No existe el archivo de ventas.");
-        return;
-    }
-
-    string[] lineas = File.ReadAllLines(rutaVentas);
-
-    if (lineas.Length == 0)
-    {
-        Console.WriteLine("No hay ventas registradas.");
-        return;
-    }
-
-    int totalVentas = 0;
-    int totalProductosVendidos = 0;
-    double ingresosTotales = 0;
-
-    Console.WriteLine("\n===== DETALLE DE VENTAS =====\n");
-
-    foreach (string linea in lineas)
-    {
-        string[] datos = linea.Split(',');
-
-        if (datos.Length != 5)
-            continue;
-
-        string fecha = datos[0];
-        string codigo = datos[1];
-        string nombre = datos[2];
-        int cantidad = int.Parse(datos[3]);
-        double total = double.Parse(datos[4]);
-
-        totalVentas++;
-        totalProductosVendidos += cantidad;
-        ingresosTotales += total;
+        ventasFiltradas++;
+        ingresosFiltrados += total;
 
         Console.WriteLine($"Fecha: {fecha}");
         Console.WriteLine($"Código: {codigo}");
         Console.WriteLine($"Producto: {nombre}");
-        Console.WriteLine($"Cantidad Vendida: {cantidad}");
-        Console.WriteLine($"Total Venta: S/. {total:F2}");
-        Console.WriteLine("----------------------------------");
+        Console.WriteLine($"Cantidad: {cantidad}");
+        Console.WriteLine($"Total: S/. {total:F2}");
+        Console.WriteLine("--------------------------------");
     }
-
-    Console.WriteLine("\n===== RESUMEN GENERAL =====");
-    Console.WriteLine($"Número de ventas realizadas: {totalVentas}");
-    Console.WriteLine($"Total de productos vendidos: {totalProductosVendidos}");
-    Console.WriteLine($"Ingresos totales: S/. {ingresosTotales:F2}");
 }
+
+Console.WriteLine("\n===== RESUMEN FILTRADO =====");
+Console.WriteLine($"Ventas por {tipoBuscado}: {ventasFiltradas}");
+Console.WriteLine($"Ingresos por {tipoBuscado}: S/. {ingresosFiltrados:F2}");
+}
+
 }
