@@ -507,6 +507,7 @@ class Program
         }
     }
     static void GenerarReporte()
+<<<<<<< HEAD
     {
         Console.Clear();
         Console.WriteLine("==================================================================");
@@ -799,4 +800,180 @@ static void MenuComprobante()
     Console.WriteLine("========================================");
     Console.WriteLine("      ¡GRACIAS POR SU COMPRA!");
 }
+=======
+    {
+        Console.Clear();
+        Console.WriteLine("==================================================================");
+        Console.WriteLine("              REPORTE DE VENTAS E INGRESOS");
+        Console.WriteLine("==================================================================");
+        Console.WriteLine(" [1] Reporte general de ventas totales");
+        Console.WriteLine(" [2] Reporte de ventas con fechas específicas");
+        Console.WriteLine(" [3] Volver al Menú Principal");
+        Console.WriteLine("==================================================================");
+        Console.Write("Opción: ");
+
+        string opcionReporte = Console.ReadLine();
+
+        if (opcionReporte == "3")
+            return;
+
+        if (opcionReporte != "1" && opcionReporte != "2")
+        {
+            Console.WriteLine("Opción inválida.");
+            return;
+        }
+
+        if (!File.Exists(rutaVentas))
+        {
+            Console.WriteLine("No existe el archivo de ventas.");
+            return;
+        }
+
+        string[] lineas = File.ReadAllLines(rutaVentas);
+
+        if (lineas.Length == 0)
+        {
+            Console.WriteLine("No hay ventas registradas.");
+            return;
+        }
+
+        DateTime fechaInicio = DateTime.MinValue;
+        DateTime fechaFin = DateTime.MaxValue;
+
+        // --- OPCIÓN 2: pedir rango de fechas ---
+        if (opcionReporte == "2")
+        {
+            Console.WriteLine("\n=== FECHA INICIO ===");
+
+            while (true)
+            {
+                Console.Write("Día: ");
+                bool diaValido = int.TryParse(Console.ReadLine(), out int dia);
+
+                Console.Write("Mes: ");
+                bool mesValido = int.TryParse(Console.ReadLine(), out int mes);
+
+                Console.Write("Año: ");
+                bool anioValido = int.TryParse(Console.ReadLine(), out int anio);
+
+                if (diaValido && mesValido && anioValido &&
+                    DateTime.TryParse($"{anio}-{mes}-{dia}", out fechaInicio))
+                {
+                    break;
+                }
+
+                Console.WriteLine("Fecha inválida. Intente nuevamente.\n");
+            }
+
+            Console.WriteLine("\n=== FECHA FIN ===");
+
+            while (true)
+            {
+                Console.Write("Día: ");
+                bool diaValido = int.TryParse(Console.ReadLine(), out int dia);
+
+                Console.Write("Mes: ");
+                bool mesValido = int.TryParse(Console.ReadLine(), out int mes);
+
+                Console.Write("Año: ");
+                bool anioValido = int.TryParse(Console.ReadLine(), out int anio);
+
+                if (diaValido && mesValido && anioValido &&
+                    DateTime.TryParse($"{anio}-{mes}-{dia}", out fechaFin))
+                {
+                    break;
+                }
+
+                Console.WriteLine("Fecha inválida. Intente nuevamente.\n");
+            }
+
+            fechaInicio = fechaInicio.Date;
+            fechaFin = fechaFin.Date.AddDays(1).AddSeconds(-1);
+        }
+
+        // --- FILTRO TIPO DE PAGO ---
+        Console.WriteLine();
+        Console.WriteLine("Filtrar por tipo de pago:");
+        Console.WriteLine(" [1] Efectivo");
+        Console.WriteLine(" [2] Yape/Plin");
+        Console.WriteLine(" [3] Todos");
+        Console.Write("Opción: ");
+
+        string opcionPago = Console.ReadLine();
+        string tipoBuscado = opcionPago == "1" ? "Efectivo"
+                           : opcionPago == "2" ? "Yape/Plin"
+                           : "TODOS";
+
+        // --- RESUMEN GENERAL ---
+        int ventasTotales = 0;
+        double gananciaTotal = 0;
+
+        foreach (string linea in lineas)
+        {
+            string[] datos = linea.Split(',');
+
+            if (datos.Length != 8)
+                continue;
+
+            ventasTotales++;
+            gananciaTotal += double.Parse(datos[4]);
+        }
+
+        Console.WriteLine();
+        Console.WriteLine("===== RESUMEN GENERAL =====");
+        Console.WriteLine($"Total de ventas registradas: {ventasTotales}");
+        Console.WriteLine($"Ganancia total acumulada:    S/.{gananciaTotal:F2}");
+        Console.WriteLine();
+
+        // --- RESULTADOS FILTRADOS ---
+        Console.WriteLine("===== RESULTADOS FILTRADOS =====");
+        Console.WriteLine();
+
+        int ventasFiltradas = 0;
+        double ingresosFiltrados = 0;
+
+        foreach (string linea in lineas)
+        {
+            string[] datos = linea.Split(',');
+
+            if (datos.Length != 8)
+                continue;
+
+            DateTime fechaVenta = DateTime.Parse(datos[0]);
+            string nombre = datos[2];
+            int cantidad = int.Parse(datos[3]);
+            double total = double.Parse(datos[4]);
+            string tipoPago = datos[5];
+            double importeRecibido = double.Parse(datos[6]);
+            double vuelto = double.Parse(datos[7]);
+
+            bool cumplePago = (tipoBuscado == "TODOS" || tipoPago == tipoBuscado);
+            bool cumpleFecha = (fechaVenta >= fechaInicio && fechaVenta <= fechaFin);
+
+            if (!cumplePago || !cumpleFecha)
+                continue;
+
+            ventasFiltradas++;
+            ingresosFiltrados += total;
+
+            Console.WriteLine($"Fecha:          {fechaVenta:dd/MM/yyyy HH:mm:ss}");
+            Console.WriteLine($"Producto:       {nombre}");
+            Console.WriteLine($"Cantidad:       {cantidad}");
+            Console.WriteLine($"Total:          S/.{total:F2}");
+            Console.WriteLine($"Pago con:       {tipoPago}");
+            Console.WriteLine($"Monto recibido: S/.{importeRecibido:F2}");
+            Console.WriteLine($"Vuelto:         S/.{vuelto:F2}");
+            Console.WriteLine("--------------------------------");
+        }
+
+        if (ventasFiltradas == 0)
+        {
+            Console.WriteLine("No se encontraron ventas con los filtros seleccionados.");
+        }
+
+        Console.WriteLine();
+        Console.WriteLine("===== RESUMEN FILTRADO =====");
+        Console.WriteLine($"Ventas encontradas: {ventasFiltradas}");
+        Console.WriteLine($"Ingresos:           S/.{ingresosFiltrados:F2}");
+    }
 }
