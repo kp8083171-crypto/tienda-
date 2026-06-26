@@ -3,17 +3,10 @@ P002,Coca Cola,Bebida,3.0,40
 P003,Pan,Alimentos,1.0,100
 P004,Leche,Lácteos,4.2,30
 P005,Queso,Lácteos,6.5,20
-<<<<<<< HEAD
 P006,Jugo,Bebida,2.8,32
 P007,Chocolate,Snack,3.5,12
 P008,Café,Bebida,5.0,15
 P009,Arroz,Granos,4.0,60
-=======
-P006,Jugo,Bebida,2.8,18
-P007,Chocolate,Snack,3.5,0
-P008,Café,Bebida,5.0,11
-P009,Arroz,Granos,4.0,55
->>>>>>> 29ec5b2a61b2de9867cdf995be892ae962738631
 P010,Azúcar,Granos,3.2,55
 P011,Sal,Condimentos,1.5,80
 P012,Fideos,Alimentos,2.2,70
@@ -57,3 +50,5 @@ P049,Té,Bebida,3.0,40
 P050,Infusión,Bebida,2.5,33
 P051,Inka Cola,Bebida,3,39
 P052,Chetos,Snack,2.5,36
+P053,Piqueos,Snack,2.5,40
+P054,Lays,Snack,2.5,35
