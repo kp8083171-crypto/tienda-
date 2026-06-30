@@ -116,47 +116,92 @@ class Program
         Console.WriteLine("=== REGISTRAR NUEVA VENTA ===");
         var lista = LeerInventario();
 
-        Console.Write("Ingrese el código del producto a vender: ");
-        string codigo = Console.ReadLine();
-
-        string[] productoSeleccionado = null;
-
-        foreach (var p in lista)
+        if (lista.Count == 0)
         {
-            if (p[0].Equals(codigo, StringComparison.OrdinalIgnoreCase))
-            {
-                productoSeleccionado = p;
-                break;
-            }
+            Console.WriteLine("ERROR: No hay productos registrados en el inventario.");
+            return;
         }
 
-        if (productoSeleccionado == null)
+        // --- VALIDACIÓN CON REINTENTO: CÓDIGO DE PRODUCTO ---
+        // Se permite reintentar hasta encontrar un producto válido o cancelar con 0
+        string[] productoSeleccionado = null;
+
+        while (productoSeleccionado == null)
         {
-            Console.WriteLine("ERROR: El producto no existe en el inventario.");
-            return;
+            Console.Write("Ingrese el código del producto a vender (0 para cancelar): ");
+            string codigo = Console.ReadLine();
+
+            if (codigo == "0")
+            {
+                Console.WriteLine("Venta cancelada.");
+                return;
+            }
+
+            foreach (var p in lista)
+            {
+                if (p[0].Equals(codigo, StringComparison.OrdinalIgnoreCase))
+                {
+                    productoSeleccionado = p;
+                    break;
+                }
+            }
+
+            if (productoSeleccionado == null)
+            {
+                Console.WriteLine(">> NOTIFICACIÓN: El código ingresado no existe. Por favor, ingrese un código válido.\n");
+            }
         }
 
         Console.WriteLine($"Producto: {productoSeleccionado[1]} | Precio: S/.{productoSeleccionado[3]} | Stock Actual: {productoSeleccionado[4]}");
 
-        Console.Write("Cantidad a vender: ");
-        if (!int.TryParse(Console.ReadLine(), out int cantidad) || cantidad <= 0)
-        {
-            Console.WriteLine("ERROR: Cantidad inválida.");
-            return;
-        }
-
         int stockActual = int.Parse(productoSeleccionado[4]);
 
-        if (cantidad > stockActual)
+        // --- VALIDACIÓN CON REINTENTO: CANTIDAD A VENDER ---
+        int cantidad = 0;
+        bool cantidadValida = false;
+
+        while (!cantidadValida)
         {
-            Console.WriteLine("ERROR: Stock insuficiente para procesar esta venta.");
-            return;
+            Console.Write("Cantidad a vender (0 para cancelar): ");
+            string entradaCantidad = Console.ReadLine();
+
+            if (entradaCantidad == "0")
+            {
+                Console.WriteLine("Venta cancelada.");
+                return;
+            }
+
+            if (!int.TryParse(entradaCantidad, out cantidad))
+            {
+                Console.WriteLine(">> NOTIFICACIÓN: Debe ingresar un número entero válido.\n");
+                continue;
+            }
+
+            if (cantidad < 0)
+            {
+                Console.WriteLine(">> NOTIFICACIÓN: La cantidad no puede ser negativa. Ingrese un valor válido.\n");
+                continue;
+            }
+
+            if (cantidad == 0)
+            {
+                Console.WriteLine(">> NOTIFICACIÓN: La cantidad debe ser mayor a cero. Ingrese un valor válido.\n");
+                continue;
+            }
+
+            if (cantidad > stockActual)
+            {
+                Console.WriteLine($">> NOTIFICACIÓN: Stock insuficiente (disponible: {stockActual}). Ingrese una cantidad válida.\n");
+                continue;
+            }
+
+            cantidadValida = true;
         }
 
         double precio = double.Parse(productoSeleccionado[3]);
         double totalPagar = precio * cantidad;
 
-        // --- NUEVA LÓGICA: SELECCIÓN DE TIPO DE PAGO ---
+        // --- SELECCIÓN DE TIPO DE PAGO (con validación de reintento) ---
         string tipoPago = "";
         while (tipoPago == "")
         {
@@ -168,28 +213,41 @@ class Program
 
             if (opPago == "1") tipoPago = "Efectivo";
             else if (opPago == "2") tipoPago = "Yape/Plin";
-            else Console.WriteLine("Opción no válida. Intente de nuevo.");
+            else Console.WriteLine(">> NOTIFICACIÓN: Opción no válida. Ingrese 1 o 2.\n");
         }
 
         double importeRecibido = totalPagar;
         double vuelto = 0;
 
-        // --- NUEVA LÓGICA: IMPORTE RECIBIDO Y VUELTO ---
+        // --- IMPORTE RECIBIDO Y VUELTO (con validación de reintento) ---
         if (tipoPago == "Efectivo")
         {
             bool importeValido = false;
             while (!importeValido)
             {
                 Console.Write($"Total a pagar: S/.{totalPagar:F2} | Ingrese Pago del Cliente: S/. ");
-                if (double.TryParse(Console.ReadLine(), out importeRecibido) && importeRecibido >= totalPagar)
+                string entradaImporte = Console.ReadLine();
+
+                if (!double.TryParse(entradaImporte, out importeRecibido))
                 {
-                    vuelto = importeRecibido - totalPagar;
-                    importeValido = true;
+                    Console.WriteLine(">> NOTIFICACIÓN: Debe ingresar un monto numérico válido.\n");
+                    continue;
                 }
-                else
+
+                if (importeRecibido < 0)
                 {
-                    Console.WriteLine("ERROR: El monto ingresado es insuficiente o inválido.");
+                    Console.WriteLine(">> NOTIFICACIÓN: El monto no puede ser negativo. Ingrese un valor válido.\n");
+                    continue;
                 }
+
+                if (importeRecibido < totalPagar)
+                {
+                    Console.WriteLine(">> NOTIFICACIÓN: El monto ingresado es insuficiente. Ingrese un valor válido.\n");
+                    continue;
+                }
+
+                vuelto = importeRecibido - totalPagar;
+                importeValido = true;
             }
         }
         else
